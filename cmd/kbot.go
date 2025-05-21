@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	tele "gopkg.in/telebot.v3"
+	telebot "gopkg.in/telebot.v3"
 )
 
 var (
@@ -22,32 +22,27 @@ var (
 var kbotCmd = &cobra.Command{
 	Use:     "kbot",
 	Aliases: []string{"start"},
-	Short:   "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short:   "Start Kbot",
+	Long:    `This command starts the Kbot Telegram bot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("kbot %s started\n", appVersion)
 
-		pref := tele.Settings{
+		pref := telebot.Settings{
 			Token:  TeleToken,
-			Poller: &tele.LongPoller{Timeout: 10 * time.Second},
+			Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 		}
 
-		kbot, err := tele.NewBot(pref)
+		kbot, err := telebot.NewBot(pref)
 		if err != nil {
 			log.Fatalf("Please check TELE_TOKEN env variable. %s", err)
 			return
 		}
 
-		kbot.Handle("/start", func(c tele.Context) error {
+		kbot.Handle("/start", func(c telebot.Context) error {
 			return c.Send(fmt.Sprintf("Hello, I'm Kbot %s and I only can echo your messages for now.", appVersion))
 		})
 
-		kbot.Handle(tele.OnText, func(c tele.Context) error {
+		kbot.Handle(telebot.OnText, func(c telebot.Context) error {
 			log.Print(c.Message().Payload, c.Text())
 			msgText := c.Text()
 
