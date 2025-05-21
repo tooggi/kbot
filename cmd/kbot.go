@@ -15,7 +15,7 @@ import (
 
 var (
 	// TeleToken bot
-	TeleToken = os.Getenv("TELE_TOKEN")
+	TELE_TOKEN = os.Getenv("TELE_TOKEN")
 )
 
 // kbotCmd represents the kbot command
@@ -28,7 +28,7 @@ var kbotCmd = &cobra.Command{
 		fmt.Printf("kbot %s started\n", appVersion)
 
 		pref := telebot.Settings{
-			Token:  TeleToken,
+			Token:  TELE_TOKEN,
 			Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 		}
 
