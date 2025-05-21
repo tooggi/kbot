@@ -14,21 +14,6 @@ kbot is a simple Telegram bot written in Go. Its main functionality is to echo b
 - A Telegram account
 - A Telegram bot token (from BotFather)
 
-### Installation
-1. Clone this repository:
-   ```bash
-   git clone <repo-url>
-   cd kbot
-   ```
-2. Set your Telegram bot token as an environment variable:
-   ```bash
-   export TELE_TOKEN=your-telegram-bot-token
-   ```
-3. Build and run the bot:
-   ```bash
-   go run main.go
-   ```
-
 ## Usage
 Start a chat with the bot on Telegram and send any message. The bot will reply with the same message.
 
