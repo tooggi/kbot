@@ -34,7 +34,7 @@ windows_arm64: format get
 	CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -v -o kbot.exe -ldflags "-X=github.com/tooggi/kbot/cmd.appVersion=$(VERSION) -s -w"
 
 image:
-	docker build -t $(REGISTRY)/$(APP):$(VERSION) --build-arg TARGETOS=$(TARGETOS) --build-arg TARGETARCH=$(TARGETARCH) .
+	docker build -t $(REGISTRY)/$(APP):$(VERSION) --build-arg TARGETOS=$(TARGETOS) --build-arg TARGETARCH=$(TARGETARCH) --build-arg VERSION=$(VERSION) .
 
 push:
 	docker push $(REGISTRY)/$(APP):$(VERSION)
