@@ -13,7 +13,7 @@ get:
 	go get
 
 build: format get
-	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -v -o kbot -ldflags "-X="github.com/tooggi/kbot/cmd.appVersion=$(VERSION)
+	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -v -o kbot -ldflags "-X=github.com/tooggi/kbot/cmd.appVersion=$(VERSION) -s -w"
 
 linux_amd64: format get
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o kbot -ldflags "-X=github.com/tooggi/kbot/cmd.appVersion=$(VERSION) -s -w"
