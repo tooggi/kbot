@@ -1,6 +1,6 @@
-APP = kbot
-VERSION = $(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
-REGISTRY = ghcr.io/tooggi
+APP := kbot
+VERSION := $(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
+REGISTRY := ghcr.io/tooggi
 TARGETOS ?= linux
 TARGETARCH ?= amd64
 
