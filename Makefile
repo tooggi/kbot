@@ -48,4 +48,4 @@ clean:
 	docker rmi $(REGISTRY)/$(APP):$(VERSION)-$(TARGETOS)-$(TARGETARCH) || true
 
 print-version:
-	@echo $(VERSION)-$(TARGETOS)-$(TARGETARCH)
+	@echo $(VERSION)
