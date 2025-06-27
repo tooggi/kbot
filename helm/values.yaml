@@ -8,6 +8,7 @@ image:
   repository: ghcr.io/tooggi
   tag: "v1.0.5-6177ea7"
   arch: amd64
+  os: linux
 
 secret:
   name: kbot-secret
