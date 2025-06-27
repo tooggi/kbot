@@ -10,7 +10,11 @@ format:
 	gofmt -s -w ./
 
 get:
-	go get
+	@go get
+
+test:
+	@echo "Running tests..."
+	@go test -v -cover ./...
 
 build: format get
 	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -v -o kbot -ldflags "-X=github.com/tooggi/kbot/cmd.appVersion=$(VERSION) -s -w"
