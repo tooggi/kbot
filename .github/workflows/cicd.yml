@@ -24,6 +24,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push
-        env:
-          APP: "kbot"
         run: make image push
