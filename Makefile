@@ -46,3 +46,6 @@ push:
 clean:
 	rm -f kbot kbot.exe
 	docker rmi $(REGISTRY)/$(APP):$(VERSION)-$(TARGETOS)-$(TARGETARCH) || true
+
+print-version:
+	@echo $(VERSION)-$(TARGETOS)-$(TARGETARCH)
