@@ -1,6 +1,8 @@
 name: KBOT-CICD
 
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   ci:
