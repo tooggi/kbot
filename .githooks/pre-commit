@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# .githooks/pre-commit
+
+set -euo pipefail
+
+# ---------------------------
+# CONFIGURATION
+# ---------------------------
+ENABLE_CONFIG_KEY="pre-commit-gitleaks.enable"
+BIN_DIR="$(dirname "$0")/bin"
+GITLEAKS_BIN="$BIN_DIR/gitleaks"
+
+mkdir -p "$BIN_DIR"
+
+# ---------------------------
+# CHECK IF HOOK IS ENABLED
+# ---------------------------
+enabled=$(git config --get "$ENABLE_CONFIG_KEY" || echo "false")
+if [ "$enabled" != "true" ]; then
+    echo "[gitleaks] pre-commit hook is disabled via git config."
+    exit 0
+fi
+
+# ---------------------------
+# DETERMINE OS AND ARCH
+# ---------------------------
+OS=""
+ARCH=""
+UNAME_S=$(uname -s)
+UNAME_M=$(uname -m)
+
+case "$UNAME_S" in
+    Linux*) OS="Linux" ;;
+    Darwin*) OS="Darwin" ;;
+    CYGWIN*|MINGW*|MSYS*) OS="Windows" ;;
+    *) echo "Unsupported OS: $UNAME_S"; exit 1 ;;
+esac
+
+case "$UNAME_M" in
+    x86_64|amd64) ARCH="x64" ;;
+    aarch64|arm64) ARCH="arm64" ;;
+    *) echo "Unsupported architecture: $UNAME_M"; exit 1 ;;
+esac
+
+# ---------------------------
+# GET LATEST GITLEAKS VERSION
+# ---------------------------
+LATEST_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+    | grep '"tag_name":' | head -n1 | sed -E 's/.*"v([^"]+)".*/\1/')
+
+if [ -z "$LATEST_VERSION" ]; then
+    echo "[gitleaks] Cannot fetch latest version."
+    exit 1
+fi
+
+# ---------------------------
+# DOWNLOAD GITLEAKS IF NEEDED OR OUTDATED
+# ---------------------------
+download_gitleaks() {
+    echo "[gitleaks] Downloading gitleaks v$LATEST_VERSION for $OS $ARCH..."
+    TMP_FILE="$BIN_DIR/gitleaks_tmp"
+
+    case "$OS" in
+        Linux) URL="https://github.com/gitleaks/gitleaks/releases/download/v$LATEST_VERSION/gitleaks_${LATEST_VERSION}_Linux_${ARCH}.tar.gz" ;;
+        Darwin) URL="https://github.com/gitleaks/gitleaks/releases/download/v$LATEST_VERSION/gitleaks_${LATEST_VERSION}_Darwin_${ARCH}.tar.gz" ;;
+        Windows) URL="https://github.com/gitleaks/gitleaks/releases/download/v$LATEST_VERSION/gitleaks_${LATEST_VERSION}_Windows_${ARCH}.zip" ;;
+    esac
+
+    if [ "$OS" = "Windows" ]; then
+        curl -L -o "$TMP_FILE.zip" "$URL"
+        unzip -o "$TMP_FILE.zip" -d "$BIN_DIR"
+        rm "$TMP_FILE.zip"
+        GITLEAKS_BIN="$BIN_DIR/gitleaks.exe"
+    else
+        curl -L -o "$TMP_FILE.tar.gz" "$URL"
+        tar -xzf "$TMP_FILE.tar.gz" -C "$BIN_DIR"
+        rm "$TMP_FILE.tar.gz"
+        chmod +x "$GITLEAKS_BIN"
+    fi
+}
+
+# Check if gitleaks exists
+if [ -f "$GITLEAKS_BIN" ]; then
+    CURRENT_VERSION=$("$GITLEAKS_BIN" version | grep -Eo '([0-9]+\.)+[0-9]+')
+    if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+        echo "[gitleaks] Updating gitleaks from $CURRENT_VERSION to $LATEST_VERSION"
+        rm -f "$GITLEAKS_BIN"
+        download_gitleaks
+    fi
+else
+    download_gitleaks
+fi
+
+# ---------------------------
+# RUN GITLEAKS
+# ---------------------------
+echo "[gitleaks] Running gitleaks detect on staged files..."
+"$GITLEAKS_BIN" detect --staged
+
+if [ $? -ne 0 ]; then
+    echo "[gitleaks] Secret detected! Commit blocked."
+    exit 1
+fi
+
+echo "[gitleaks] No secrets found. Commit allowed."
+exit 0
