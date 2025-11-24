@@ -18,12 +18,15 @@ This repository includes an optional pre-commit hook that scans staged changes f
 #### Enable the hook
 To enable Git hooks for this repository, run:
 
-    git config core.hooksPath .githooks
+````bash
+git config core.hooksPath .githooks
+````
 
 Then enable the Gitleaks pre-commit hook:
 
-    git config pre-commit-gitleaks.enable true
-
+````bash
+git config pre-commit-gitleaks.enable true
+````
 
 ## License
 This project is licensed under the MIT License.
