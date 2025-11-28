@@ -95,7 +95,7 @@ fi
 # RUN GITLEAKS
 # ---------------------------
 echo "[gitleaks] Running gitleaks detect on repository source..."
-"$GITLEAKS_BIN" detect --redact=90 -v
+"$GITLEAKS_BIN" git --pre-commit --staged --redact -v
 
 if [ $? -ne 0 ]; then
     echo "[gitleaks] Secret detected! Commit blocked."
